@@ -1,0 +1,10 @@
+/build
+/.gradle
+/.idea
+/.vscode
+/.classpath
+/.project
+/.settings
+out/
+*.iml
+db/init/*.sql

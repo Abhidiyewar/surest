@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/surest
+    username: postgres
+    password: test
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: always             # run scripts on startup
+      platform: postgres
+      schema-locations: classpath:db/001_create_tables.sql
+      data-locations: classpath:db/002_seed_data.sql
+  redis:
+    host: localhost
+    port: 6379
+
+server:
+  port: 9090
+
+jwt:
+  secret: abc7875355017$@#Abhi
+  expiration-ms: 3600000
