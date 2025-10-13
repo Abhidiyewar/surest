@@ -5,6 +5,7 @@ import com.surest.mapper.MemberMapper;
 import com.surest.model.Member;
 import com.surest.repository.MemberRepository;
 import com.surest.service.MemberService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@Slf4j
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository repo;
@@ -28,16 +30,16 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Page<MemberDto> list(String firstName, String lastName, Pageable pageable) {
-        if (firstName == null) firstName = "";
-        if (lastName == null) lastName = "";
-        return repo.findByFirstNameContainsIgnoreCaseAndLastNameContainsIgnoreCase(firstName, lastName, pageable)
+    public Page<MemberDto> list( String lastName, Pageable pageable) {
+        return repo.findByLastNameContainsIgnoreCase( lastName, pageable)
                 .map(mapper::toDto);
     }
+
 
     @Override
     @Cacheable(value = "members", key = "#id")
     public MemberDto get(UUID id) {
+        log.info("MemberService.get() invoked for id = {}", id);
         return repo.findById(id).map(mapper::toDto).orElseThrow(() -> new RuntimeException("Member not found"));
     }
 

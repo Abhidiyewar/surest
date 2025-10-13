@@ -7,9 +7,9 @@ import org.springframework.data.domain.Pageable;
 import java.util.UUID;
 
 public interface MemberService {
-    Page<MemberDto> list(String firstName, String lastName, Pageable pageable);
-    MemberDto get(UUID id);
+    Page<MemberDto> list( String lastName, Pageable pageable);
+    MemberDto get(UUID uuid);
     MemberDto create(MemberDto dto);
-    MemberDto update(UUID id, MemberDto dto);
-    void delete(UUID id);
+    MemberDto update(UUID uuid, MemberDto dto);
+    void delete(UUID uuid);
 }

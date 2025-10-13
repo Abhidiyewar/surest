@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 
         UUID id = UUID.randomUUID();
         Member m = Member.builder()
-                .id(id)
+                .uuid(id)
                 .firstName("A")
                 .lastName("B")
 

@@ -4,19 +4,25 @@ spring:
     username: postgres
     password: test
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 30000
+      max-lifetime: 600000
+      connection-timeout: 30000
+      pool-name: HikariCP
+
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-  sql:
-    init:
-      mode: always             # run scripts on startup
-      platform: postgres
-      schema-locations: classpath:db/001_create_tables.sql
-      data-locations: classpath:db/002_seed_data.sql
+        jdbc.time.timezone: UTC
+      open-in-view: false
+
   redis:
     host: localhost
     port: 6379
@@ -25,5 +31,5 @@ server:
   port: 9090
 
 jwt:
-  secret: abc7875355017$@#Abhi
+  secret: y7tX0Xc7jQhD7jX1eY3pA4KfQ5zJ8XwRrM2xH+9vY3M=
   expiration-ms: 3600000
