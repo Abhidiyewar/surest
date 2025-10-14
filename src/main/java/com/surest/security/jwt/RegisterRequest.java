@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 public record RegisterRequest(
-        @NotNull UUID id,
+         UUID id,
         @NotBlank String username,
         @NotBlank String password,
         @NotNull UUID roleId

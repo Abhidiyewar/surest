@@ -15,7 +15,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    defer-datasource-initialization: true
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -23,13 +24,15 @@ spring:
         jdbc.time.timezone: UTC
       open-in-view: false
 
-  redis:
-    host: localhost
-    port: 6379
-
 server:
   port: 9090
 
 jwt:
   secret: y7tX0Xc7jQhD7jX1eY3pA4KfQ5zJ8XwRrM2xH+9vY3M=
   expiration-ms: 3600000
+
+logging:
+    level:
+        root: INFO
+        org.springframework.cache: DEBUG
+        org.redis: DEBUG
