@@ -2,6 +2,7 @@ package com.surest.service;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import java.security.Key;
 import java.util.Date;
 
 @Service
+@Slf4j
 public class JwtService {
 
     @Value("${jwt.secret}")
@@ -19,7 +21,6 @@ public class JwtService {
     private long expirationMs;
 
     private Key getSigningKey() {
-        // Use HMAC key derived from secret bytes; secret should be sufficiently long (>= 256 bits for HS256)
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
@@ -52,8 +53,13 @@ public class JwtService {
                     .parseClaimsJws(token)
                     .getBody()
                     .getExpiration();
-            return exp.before(new Date());
+            boolean expired = exp.before(new Date());
+            if (expired) {
+                log.warn("JWT is expired");
+            }
+            return expired;
         } catch (JwtException e) {
+            log.warn("Failed to parse JWT for expiration check: {}", e.getClass().getSimpleName());
             return true;
         }
     }
@@ -61,8 +67,15 @@ public class JwtService {
     public boolean validateToken(String token, UserDetails user) {
         try {
             final String username = extractUsername(token);
-            return (username != null && username.equals(user.getUsername()) && !isTokenExpired(token));
+            boolean valid = (username != null && username.equals(user.getUsername()) && !isTokenExpired(token));
+            if (valid) {
+                log.info("JWT validated for username='{}'", user.getUsername());
+            } else {
+                log.warn("JWT validation failed for username='{}'", user.getUsername());
+            }
+            return valid;
         } catch (JwtException ex) {
+            log.warn("JWT validation error: {}", ex.getClass().getSimpleName());
             return false;
         }
     }

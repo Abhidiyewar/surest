@@ -35,7 +35,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-//        final String authHeader = request.getHeader("Authorization");
         String path = request.getRequestURI();
         String method = request.getMethod();
         String authHeader = request.getHeader("Authorization");
@@ -64,7 +63,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 log.debug("JWT validation failed for user {}", username);
             }
         }
-
         filterChain.doFilter(request, response);
     }
 }

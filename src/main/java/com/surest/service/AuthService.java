@@ -6,6 +6,7 @@ import com.surest.repository.RoleRepository;
 import com.surest.repository.UserRepository;
 import com.surest.security.jwt.LoginRequest;
 import com.surest.security.jwt.RegisterRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -28,33 +30,47 @@ public class AuthService {
     }
 
     public User register(RegisterRequest req) {
-        // enforce required fields (validation already ensures non-null/blank)
+        log.info("Registration attempt for username='{}'", req.username());
+
         if (userRepository.existsByUsername(req.username())) {
+            log.warn("Registration blocked: username '{}' already exists", req.username());
             throw new IllegalArgumentException("username already exists");
         }
 
-        // find role by id (required)
         Role role = roleRepository.findById(req.roleId())
-                .orElseThrow(() -> new IllegalArgumentException("role not found"));
+                .orElseThrow(() -> {
+                    log.warn("Registration failed: role not found for roleId='{}'", req.roleId());
+                    return new IllegalArgumentException("role not found");
+                });
 
-        User u = new User();
-        u.setId(req.id());
-        u.setUsername(req.username());
-        u.setPasswordHash(passwordEncoder.encode(req.password()));
-        u.setRole(role);
+        User user = new User();
+        user.setId(req.id());
+        user.setUsername(req.username());
+        user.setPasswordHash(passwordEncoder.encode(req.password()));
+        user.setRole(role);
 
-        return userRepository.save(u);
+        User saved = userRepository.save(user);
+        log.info("User registered successfully: id='{}', username='{}', role='{}'",
+                saved.getId(), saved.getUsername(), saved.getRole().getName());
+        return saved;
     }
 
     public UserDetails authenticate(LoginRequest req) {
-        var user = userRepository.findByUsername(req.username())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+        var userOpt = userRepository.findByUsername(req.username());
+        if (userOpt.isEmpty()) {
+            log.warn("Login failed: user not found for username='{}'", req.username());
+            throw new UsernameNotFoundException("User not found");
+        }
+
+        var user = userOpt.get();
         boolean matches = passwordEncoder.matches(req.password(), user.getPasswordHash());
         if (!matches) {
+            log.warn("Login failed: bad credentials for username='{}'", req.username());
             throw new BadCredentialsException("Invalid username or password");
         }
 
+        log.info("Login successful for username='{}'", req.username());
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPasswordHash(),
