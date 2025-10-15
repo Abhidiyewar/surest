@@ -27,26 +27,24 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponse> register(@RequestBody @Valid RegisterRequest req) {
-        // AuthService.register(...) throws IllegalArgumentException if invalid (handled by ControllerAdvice)
-        User saved = authService.register(req);
-
-        RegisterResponse body = new RegisterResponse(saved.getId(), saved.getUsername(), saved.getRole().getName());
-
+    public ResponseEntity<RegisterResponse> registerMembers(@RequestBody @Valid RegisterRequest registerRequest) {
+        User saveUser = authService.register(registerRequest);
+        RegisterResponse body = new RegisterResponse(saveUser.getId(),
+                saveUser.getUsername(), saveUser.getRole().getName(),
+                "User Registered Successfully!");
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(saved.getId())
+                .buildAndExpand(saveUser.getId())
                 .toUri();
 
-        return ResponseEntity.created(location).body(body); // 201 Created
+        return ResponseEntity.created(location).body(body);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest req) {
-        // AuthService.authenticate(...) throws UsernameNotFoundException/BadCredentialsException on failure
-        var ud = authService.authenticate(req);
-        var token = jwtService.generateToken(ud);
-        return ResponseEntity.ok(new LoginResponse(token)); // 200 OK with typed body
+    public ResponseEntity<LoginResponse> loginMembers(@RequestBody @Valid LoginRequest loginRequest) {
+        var userDetails = authService.authenticate(loginRequest);
+        var generatedToken = jwtService.generateToken(userDetails);
+        return ResponseEntity.ok(new LoginResponse(generatedToken));
     }
 }

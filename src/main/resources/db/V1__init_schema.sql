@@ -1,0 +1,24 @@
+-- ROLE TABLE
+CREATE TABLE IF NOT EXISTS role (
+  id   UUID PRIMARY KEY,
+  name VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- USER TABLE WITH ROLE ID
+CREATE TABLE IF NOT EXISTS surest_users (
+  id            UUID PRIMARY KEY,
+  username      VARCHAR(50)  NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  role_id       UUID         NOT NULL REFERENCES role(id)
+);
+
+--SUREST MEMBER TABLE FOR CRUD OPERATIONS
+CREATE TABLE IF NOT EXISTS surest_members (
+  uuid         UUID PRIMARY KEY,
+  first_name   VARCHAR(100) NOT NULL,
+  last_name    VARCHAR(100) NOT NULL,
+  date_of_birth DATE        NOT NULL,
+  email        VARCHAR(255) NOT NULL UNIQUE,
+  created_at   TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at   TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);

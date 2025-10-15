@@ -3,21 +3,23 @@
 Java 17 Spring Boot project scaffold for member management.
 
 Features:
-- PostgreSQL scripts in `db/init/`.
+- PostgreSQL database
+- Used Flyway SQL Scripts for INSERTION AND CREATION
 - JWT authentication.
 - Role-based access: ROLE_ADMIN and ROLE_USER.
-- REST APIs for Member CRUD.
-- Redis cache for GET /members/{id}.
+- REST APIs for Surest Member CRUD.
+- Caffeine cache for GET /members/{id}.
 - Pagination, sorting, filtering on GET /members.
-- Unit and integration test examples.
-- JaCoCo code coverage configured.
+- Unit and integration test 
+- JaCoCo code coverage configured for more than 80%
 
 Run:
-1. Create postgres database and run SQL scripts in `db/init/`.
-2. Configure `src/main/resources/application.yml`.
-3. Build: `./gradlew clean build`
-4. Run: `./gradlew bootRun`
+1. Build: `./gradlew clean build`
+2. Run: `./gradlew bootRun`
+3. Access the api via swagger.ui
+4. Role with ID must be created in DB
+5. Create a User with role-id assign ROLE_USER or ROLE_ADMIN
+6. Login with the User JWT token will be generated
+7. Authorize the JWT TOKEN 
+8. Access the API 
 
-Notes:
-- Replace JWT secret in application.yml with a strong secret.
-- Seeded SQL uses placeholder bcrypt hashes. Replace with real bcrypt hashes or insert with your own.
